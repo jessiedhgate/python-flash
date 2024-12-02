@@ -1,9 +1,14 @@
 import random
 import re
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import os
 
 app = Flask(__name__)
+
+# 添加首页路由来渲染index.html
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 def is_number(value):
     """检查一个值是否为数字（浮动或整数）。"""
@@ -87,6 +92,7 @@ def process():
     # 处理文件并返回结果
     output_data = process_file(input_file, num_modules)
 
+    # 返回处理后的数据
     return jsonify({"processed_data": output_data})
 
 if __name__ == '__main__':
