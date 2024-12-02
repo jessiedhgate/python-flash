@@ -1,2 +1,4 @@
 fastapi
 uvicorn
+python-multipart  # 如果有上传文件的需求
+
