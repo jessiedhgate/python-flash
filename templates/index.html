@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload and Download</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            max-width: 800px;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        input[type="file"], input[type="number"] {
+            display: block;
+            margin: 10px auto;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload File and Process</h1>
+        <form id="upload-form" enctype="multipart/form-data">
+            <label for="file">Choose a file to upload:</label>
+            <input type="file" id="file" name="file" required>
+
+            <label for="num_modules">Number of modules:</label>
+            <input type="number" id="num_modules" name="num_modules" value="1" required min="1">
+
+            <button type="submit">Upload and Process</button>
+        </form>
+
+        <div class="message" id="message"></div>
+        <div class="message" id="download-link"></div>
+    </div>
+
+    <script>
+        document.getElementById("upload-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const messageDiv = document.getElementById("message");
+            const downloadLinkDiv = document.getElementById("download-link");
+            
+            messageDiv.textContent = "Uploading and processing file...";
+
+            fetch("/process", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                messageDiv.textContent = "File processed successfully!";
+                if (data.processed_data) {
+                    downloadLinkDiv.innerHTML = `
+                        <a href="data:text/plain;charset=utf-8,${encodeURIComponent(data.processed_data.join("\n"))}" download="processed_file.txt">
+                            Download Processed File
+                        </a>
+                    `;
+                }
+            })
+            .catch(error => {
+                messageDiv.textContent = "An error occurred while processing the file.";
+                console.error("Error:", error);
+            });
+        });
+    </script>
+</body>
+</html>
